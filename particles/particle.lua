@@ -87,3 +87,65 @@ function ParticleSystem:update()
     end
 end
 
+SegmentParticle = {}
+SegmentParticle.__index = SegmentParticle
+
+function SegmentParticle:create(loc1, loc2)
+    local segment = {}
+    setmetatable(segment, SegmentParticle)
+    segment.loc1 = loc1:copy()
+    segment.loc2 = loc2:copy()
+    segment.acceleration = Vector:create(0, 0.05)
+    segment.velocity = Vector:create(math.random(-200, 200) / 100, math.random(-100, 0) / 100)
+    segment.lifespan = 100 
+    return segment
+end
+
+function SegmentParticle:update()
+    self.velocity:add(self.acceleration)
+    self.loc1:add(self.velocity)
+    self.loc2:add(self.velocity)
+    self.lifespan = self.lifespan - 0.02
+end
+
+function SegmentParticle:isDead()
+    return self.lifespan < 1
+end
+
+function SegmentParticle:draw()
+    r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor(1, 1, 1, self.lifespan / 100)
+    love.graphics.line(self.loc1.x, self.loc1.y, self.loc2.x, self.loc2.y)
+    love.graphics.setColor(r, g, b, a)
+end
+
+SegmentParticleCircle = {}
+SegmentParticleCircle.__index = SegmentParticleCircle
+
+function SegmentParticleCircle:create(loc)
+    local segment = {}
+    setmetatable(segment, SegmentParticleCircle)
+    segment.loc = loc:copy()
+    segment.acceleration = Vector:create(0, 0.05)
+    segment.velocity = Vector:create(math.random(-200, 200) / 100, math.random(-100, 0) / 100)
+    segment.lifespan = 100 
+    return segment
+end
+
+function SegmentParticleCircle:update()
+    self.velocity:add(self.acceleration)
+    self.loc:add(self.velocity)
+    self.lifespan = self.lifespan - 0.02
+end
+
+function SegmentParticleCircle:isDead()
+    return self.lifespan < 1
+end
+
+function SegmentParticleCircle:draw()
+    r, g, b, a = love.graphics.getColor()
+    love.graphics.setColor(0, 0, 1, self.lifespan / 100)
+    love.graphics.circle("fill", self.loc.x, self.loc.y, 5)
+    love.graphics.setColor(r, g, b, a)
+end
+

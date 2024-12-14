@@ -1,22 +1,29 @@
 require "vector"
 require "particle"
 require "repeller"
+require "box_particles_system"
+require "box"
 
 
 function love.load()
     width = love.graphics.getWidth()
     height = love.graphics.getHeight()
 
-    repeller = Repeller:create(width/2 - 200, height/2 + 100)
-    system = ParticleSystem:create(Vector:create(width/2, height/2), 100, Particle)
+    box = Box:create(Vector:create(width/2, height/2), 100)
+    Psystem = BoxParticleSystem:create()
 
 end
 
 function love.update()
-    system:apply(repeller)
-    system:update()
+    box:update()
+    Psystem:update()
 end
 
 function love.draw()
-    system:draw()
+    box:draw()
+    Psystem:draw()
+end
+
+function love.mousepressed(x, y, button, istouch, presses)
+    box:clicked(x, y)
 end
