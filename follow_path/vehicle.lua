@@ -31,13 +31,33 @@ function Vehicle:follow(path)
     predict:norm()
     predict:mul(50)
     local pos = self.location + predict
-    local normal = getNormalPoint(pos, path.start, path.stop)
-    local dir = path.stop - path.start
-    dir:norm()
-    dir:mul(10)
-    local target = normal + dir
-    local distance = pos:distTo(dir)
-    if distance > path.d then
+
+    local normal = nil
+    local target = nil
+    local maxdist = 10000000000
+
+    for i=0, #path.points - 1 do
+        local a = path.points[i]:copy()
+        local b = path.points[i+1]:copy()
+        local point = getNormalPoint(pos, a, b)
+
+        if point.x < a.x or point.x > b.x or point.y < a.y or point.y > b.y then
+            point = b:copy()
+        end
+
+        local dist = pos:distTo(point)
+        if dist < maxdist then
+            maxdist = dist
+            normal = point
+            local dir = b - a
+            dir:norm()
+            dir:mul(20)
+            target = point:copy()
+            target:add(dir)
+        end
+    end
+
+    if maxdist > path.d then
         self:seek(target)
     end
 end
